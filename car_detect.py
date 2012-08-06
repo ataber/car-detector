@@ -82,6 +82,8 @@ def process_depth_map(in_f, in_f_plane, in_pln, out_f):
                 pix = I.getpixel((x,y))
                 candidates.putpixel((x,h-y),pix)
     
+    RGB = I.transpose(Image.FLIP_TOP_BOTTOM) 
+
     plt.subplot(221)
     plt.imshow(pano)
     plt.subplot(222)
@@ -89,8 +91,9 @@ def process_depth_map(in_f, in_f_plane, in_pln, out_f):
     plt.subplot(223)
     plt.imshow(delta)
     plt.subplot(224)
-    plt.imshow(lines)
+    plt.imshow(RGB)
     plt.show()
+    #imsave(delta,out_f)
 
 def get_lines(box_map,line_params):
     """
@@ -347,8 +350,10 @@ def get_height_map(equations,plane,A):
             Z = cos(theta)
 
             height = (float(ground[0])*r*X + float(ground[1])*r*Y + float(ground[2])*r*Z) + float(ground[3])
-            coord_y = int(r*Y*50 + 500)
-            coord_x = int(r*X*50 + 500)
+            coord_y = int(r*Y*50 + H.shape[0]/2) 
+            coord_x = int(r*X*50 + H.shape[1]/2)
+            # center coordinates (note the factor of 50 in the coordinate - that's effectively "zooming in"
+            # in picture, giving higher resolution)
             if (height > 1 or height < .2):
                 continue
             #print "H[y,x] = ", coord_y, coord_x, height
