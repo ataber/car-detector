@@ -1,5 +1,9 @@
+#!/usr/bin/env python
+
 """
 Written by Andrew Taber for earthmine inc.
+
+Copyright (c) 2012 earthmine, inc. All rights reserved.
 
 The purpose of this algorithm is to take a depth panorama
 and extract features (in particular cars) in order to speed
@@ -358,9 +362,12 @@ if __name__ == '__main__':
     import sys
     from os import path
 
+    if len(sys.argv) < 2:
+        print "Usage: one argument - directory containing depth and plane panoramas and plane palette files"
+        sys.exit(1)
     in_f = path.join(sys.argv[1], 'depth.png')
     in_f_plane = path.join(sys.argv[1], 'plane_pano.png')
     in_pln = path.join(sys.argv[1], 'plane_palette.txt')
-    out_f = 'heightmap_delta.png'
+    out_f = path.join(sys.argv[1],'heightmap.png')
 
     process_depth_map(in_f, in_f_plane, in_pln, out_f)
