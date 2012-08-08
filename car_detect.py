@@ -91,7 +91,7 @@ def process_depth_map(in_f, in_f_plane, in_pln, out_f):
     plt.subplot(223)
     plt.imshow(delta)
     plt.subplot(224)
-    plt.imshow(RGB)
+    plt.imshow(lines)
     plt.show()
     #imsave(delta,out_f)
 
@@ -115,17 +115,19 @@ def get_lines(box_map,line_params):
         dist = line_param[2]
         m = -np.cos(angle)/np.sin(angle)
         b = dist/np.sin(angle)
-        x = np.arange(0,box_map.shape[1]-1,step=1)
-        y = m*x + b + box_map.shape[0]/2
-        for x_pt in x:
-            for y_pt in y:
-                if y_pt < 0 or y_pt >= 1000:
-                    continue
-                # We only want lines to be drawn inside their respective boxes
-                #if box_map[int(y_pt),int(x_pt)] != label:
-                #    continue
-                result[int(y_pt),int(x_pt)] = label
-    return result
+        x = np.arange(0,box_map.shape[1])
+        y = m*x + b 
+        for index,x_pt in enumerate(x):
+            y_pt = y[index]
+            if y_pt < 0 or y_pt >= 1000:
+                continue
+            # We only want lines to be drawn inside their respective boxes
+            if box_map[int(x_pt),int(y_pt)] != label:
+                continue
+            result[int(x_pt),int(y_pt)] = label
+            # the order of the x and y coordinates confused me for quite a while,
+            # but this seems to give good answers
+    return result 
 
 def get_angles(delta,box_map,labels):
     """
@@ -147,11 +149,11 @@ def get_angles(delta,box_map,labels):
     for label in labels:
         transform, angles, bins = houghtf(np.where(box_map==label,delta,np.zeros(delta.shape)))
         angle_index = np.argmax(transform)
-        angle = angles[(angle_index%180)]
+        angle = angles[(angle_index%transform.shape[1])]
         opposite = angle - 90
         if opposite < -90:
             opposite += 180
-        dist = bins[(angle_index/180)]
+        dist = bins[(angle_index/transform.shape[1])]
         result.append((label,angle,dist))
     return result
 
