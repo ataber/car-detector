@@ -69,7 +69,7 @@ def process_depth_map(in_f, in_f_plane, in_pln, out_f):
     line_param = get_angles(delta,box,labels)
     lines = get_lines(box,line_param)
 
-    # TODO: Put this block of code somewhere else
+    # TODO: refactor this block into its own function
     # Fill in raster image to check accuracy of 
     # segmented pano.
     I = Image.open(path.join(sys.argv[1],"raster.jpg"))
@@ -121,12 +121,10 @@ def get_lines(box_map,line_params):
             y_pt = y[index]
             if y_pt < 0 or y_pt >= 1000:
                 continue
-            # We only want lines to be drawn inside their respective boxes
+                # We only want lines to be drawn inside their respective boxes
             if box_map[int(x_pt),int(y_pt)] != label:
                 continue
             result[int(x_pt),int(y_pt)] = label
-            # the order of the x and y coordinates confused me for quite a while,
-            # but this seems to give good answers
     return result 
 
 def get_angles(delta,box_map,labels):
